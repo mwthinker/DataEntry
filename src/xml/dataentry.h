@@ -103,7 +103,7 @@ namespace xml {
 		// Iterate through all child with the name corresponding to (childTagName), 
 		// the callback function(next) should return true if the next element should be visit,
 		// else false.
-		void iterateChilds(std::string childTagName, const std::function<bool(DataEntry)>& next) const;
+		void iterateChilds(std::string childTagName, const std::function<bool(DataEntry&)>& next) const;
 		
 		// Return true if the current tag is valid.
 		bool isValid() const;

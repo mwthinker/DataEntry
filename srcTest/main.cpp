@@ -25,7 +25,7 @@ int main(int argc, char** argv) {
 	}
 
 	int size = 0;
-	entry.getChildEntry("test").getChildEntry("iter").iterateChilds("testing", [&](xml::DataEntry dEntry) {
+	entry.getChildEntry("test").getChildEntry("iter").iterateChilds("testing", [&](xml::DataEntry& dEntry) {
 		++size;
 		return true;
 	});

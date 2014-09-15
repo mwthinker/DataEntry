@@ -100,7 +100,7 @@ namespace xml {
 		set<std::string>(value);
 	}
 
-	void DataEntry::iterateChilds(std::string childTagName, const std::function<bool(DataEntry)>& next) const {
+	void DataEntry::iterateChilds(std::string childTagName, const std::function<bool(DataEntry&)>& next) const {
 		auto childTag = tag_.FirstChildElement(childTagName.c_str());
 		while (childTag.ToElement() != nullptr) {
 			auto entry = DataEntry(xml_, childTag);
