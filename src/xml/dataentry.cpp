@@ -44,6 +44,46 @@ namespace xml {
 		return get<std::string>();
 	}
 
+	// Return the tag's attribute bool value.
+	// If it fails the default value is returned.
+	bool DataEntry::getBoolAttribute(std::string attribute) const {
+		tinyxml2::XMLElement* e = tag_.ToElement();
+		if (e != nullptr) {
+			return e->BoolAttribute(attribute.c_str());
+		}
+		return bool();
+	}
+
+	// Return the tag's attribute float value.
+	// If it fails the default value is returned.
+	float DataEntry::getFloatAttribute(std::string attribute) const {
+		tinyxml2::XMLElement* e = tag_.ToElement();
+		if (e != nullptr) {
+			return e->FloatAttribute(attribute.c_str());
+		}
+		return float();
+	}
+
+	// Return the tag's attribute int value.
+	// If it fails the default value is returned.
+	int DataEntry::getIntAttribute(std::string attribute) const {
+		tinyxml2::XMLElement* e = tag_.ToElement();
+		if (e != nullptr) {
+			return e->IntAttribute(attribute.c_str());
+		}
+		return int();
+	}
+
+	// Return the tag's attribute string value.
+	// If it fails the default value is returned.
+	std::string DataEntry::getStringAttribute(std::string attribute) const {
+		tinyxml2::XMLElement* e = tag_.ToElement();
+		if (e != nullptr) {
+			return e->Attribute(attribute.c_str());
+		}
+		return std::string();
+	}
+
 	void DataEntry::setBool(bool value) {
 		set<bool>(value);
 	}

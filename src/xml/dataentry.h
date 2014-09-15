@@ -36,6 +36,22 @@ namespace xml {
 		// If it fails the default value is returned.
 		std::string getString() const;
 
+		// Return the tag's attribute bool value.
+		// If it fails the default value is returned.
+		bool getBoolAttribute(std::string attribute) const;
+
+		// Return the tag's attribute float value.
+		// If it fails the default value is returned.
+		float getFloatAttribute(std::string attribute) const;
+
+		// Return the tag's attribute int value.
+		// If it fails the default value is returned.
+		int getIntAttribute(std::string attribute) const;
+
+		// Return the tag's attribute string value.
+		// If it fails the default value is returned.
+		std::string getStringAttribute(std::string attribute) const;
+
 		// Return the tag's current Value value.
 		// If it fails the default value is returned.
 		template <class Value>
