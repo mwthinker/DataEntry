@@ -100,15 +100,8 @@ namespace xml {
 		set<std::string>(value);
 	}
 
-	void DataEntry::iterateChilds(std::string childTagName, const std::function<bool(DataEntry&)>& next) const {
-		auto childTag = tag_.FirstChildElement(childTagName.c_str());
-		while (childTag.ToElement() != nullptr) {
-			auto entry = DataEntry(xml_, childTag);
-			if (!next(entry)) {
-				break;
-			}
-			childTag = childTag.NextSiblingElement(childTagName.c_str());
-		}
+	DataEntry DataEntry::getSibling(std::string siblingName) const {
+		return DataEntry(xml_, tag_.NextSiblingElement(siblingName.c_str()));
 	}
 
 	DataEntry::DataEntry(std::string file) : xml_(std::make_shared<Xml>()), tag_(xml_->doc_) {
@@ -138,8 +131,12 @@ namespace xml {
 	DataEntry::DataEntry(std::shared_ptr<Xml> xml, tinyxml2::XMLHandle tag) : xml_(xml), tag_(tag) {
 	}
 
-	bool DataEntry::isValid() const {
-		return !xml_->doc_.Error() || tag_.ToElement() != nullptr;
+	bool DataEntry::hasData() const {
+		return tag_.ToElement() != nullptr;
+	}
+
+	bool DataEntry::isError() const {
+		return xml_->doc_.Error();
 	}
 
 	void DataEntry::printError() const {

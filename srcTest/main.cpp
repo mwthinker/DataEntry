@@ -7,7 +7,7 @@
 int main(int argc, char** argv) {
 	xml::DataEntry entry("test.xml");
 	entry.printError();
-	assert(entry.isValid());
+	assert(!entry.isError());
 
 	// Do this.
 	{
@@ -25,10 +25,11 @@ int main(int argc, char** argv) {
 	}
 
 	int size = 0;
-	entry.getChildEntry("test").getChildEntry("iter").iterateChilds("testing", [&](xml::DataEntry& dEntry) {
+	xml::DataEntry itE = entry.getEntry("test iter testing");
+	while (itE.hasData()) {
 		++size;
-		return true;
-	});
+		itE = itE.getSibling("testing");
+	}
 
 	assert(entry.getChildEntry("test").getChildEntry("iter").getChildEntry("testing").isAttributeEqual("a", "1"));
 

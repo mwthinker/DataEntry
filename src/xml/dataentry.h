@@ -100,13 +100,12 @@ namespace xml {
 		// entry.getChildEntry("test").getChildEntry("window").getChildEntry("width")
 		DataEntry getEntry(std::string tagNames) const;
 
-		// Iterate through all child with the name corresponding to (childTagName), 
-		// the callback function(next) should return true if the next element should be visit,
-		// else false.
-		void iterateChilds(std::string childTagName, const std::function<bool(DataEntry&)>& next) const;
+		DataEntry getSibling(std::string siblingName) const;
 		
-		// Return true if the current tag is valid.
-		bool isValid() const;
+		// Return true if the current tag has data.
+		bool hasData() const;
+
+		bool isError() const;
 
 		// Print the current error message. Only prints when there is an error.
 		void printError() const;
