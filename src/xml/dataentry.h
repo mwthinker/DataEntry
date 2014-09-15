@@ -34,7 +34,7 @@ namespace xml {
 
 		// Return the tag's current string value.
 		// If it fails the default value is returned.
-		std::string getString(std::string tagName) const;
+		std::string getString() const;
 
 		// Return the tag's current Value value.
 		// If it fails the default value is returned.

@@ -40,7 +40,7 @@ namespace xml {
 		return get<int>();
 	}	
 
-	std::string DataEntry::getString(std::string tagName) const {
+	std::string DataEntry::getString() const {
 		return get<std::string>();
 	}
 
