@@ -106,6 +106,7 @@ namespace xml {
 
 	DataEntry::DataEntry(std::string file) : xml_(std::make_shared<Xml>()), tag_(xml_->doc_) {
 		xml_->doc_.LoadFile(file.c_str());
+		xml_->fileName_ = file;
 		tag_ = tinyxml2::XMLHandle(xml_->doc_);
 	}
 
