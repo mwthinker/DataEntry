@@ -15,8 +15,8 @@ option(DataEntryTest "LoadXmlTest project is added" OFF)
 
 # Source files.
 set(SOURCES
-	src/dataentry.cpp
-	src/dataentry.h
+	src/xml/dataentry.cpp
+	src/xml/dataentry.h
 )
 set(SOURCES_TEST
 	srcTest/main.cpp
