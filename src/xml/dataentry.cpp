@@ -114,7 +114,7 @@ namespace xml {
 		return DataEntry(xml_, tag_.FirstChildElement(tagName.c_str()));
 	}
 
-	DataEntry DataEntry::getEntry(std::string tagNames) const {
+	DataEntry DataEntry::getDeepChildEntry(std::string tagNames) const {
 		std::stringstream stream(tagNames);
 		std::string tag;
 		tinyxml2::XMLHandle handleXml(tag_);

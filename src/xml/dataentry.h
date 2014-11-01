@@ -98,7 +98,7 @@ namespace xml {
 		// E.g. getEntry("test window width")
 		// give the same result as 
 		// entry.getChildEntry("test").getChildEntry("window").getChildEntry("width")
-		DataEntry getEntry(std::string tagNames) const;
+		DataEntry getDeepChildEntry(std::string tagNames) const;
 
 		DataEntry getSibling(std::string siblingName) const;
 		
