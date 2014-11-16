@@ -104,6 +104,14 @@ namespace xml {
 		return DataEntry(xml_, tag_.NextSiblingElement(siblingName.c_str()));
 	}
 
+	DataEntry DataEntry::getParent() const {
+		auto node = tag_.ToNode();
+		if (node == nullptr) {
+			return DataEntry(xml_, tag_);
+		}
+		return DataEntry(xml_, tag_.ToNode()->Parent());
+	}
+
 	DataEntry::DataEntry(std::string file) : xml_(std::make_shared<Xml>()), tag_(xml_->doc_) {
 		xml_->doc_.LoadFile(file.c_str());
 		xml_->fileName_ = file;

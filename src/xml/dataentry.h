@@ -101,6 +101,8 @@ namespace xml {
 		DataEntry getDeepChildEntry(std::string tagNames) const;
 
 		DataEntry getSibling(std::string siblingName) const;
+
+		DataEntry getParent() const;
 		
 		// Return true if the current tag has data.
 		bool hasData() const;
