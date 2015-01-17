@@ -10,6 +10,25 @@
 
 namespace xml {
 
+	// Generic template function to extract value from xml tag.
+	template <class Output>
+	Output extract(tinyxml2::XMLHandle handle);
+
+	// Specialization for string type. In order to insure that the whole text is 
+	// returned as a string.
+	template <>
+	std::string extract(tinyxml2::XMLHandle handle);
+
+	// Returns the value defined in the input string. 
+	// E.g. input = "zombieGame interface font", returns the 
+	// value defined in the tag inside <zombieGame><interface><font>value</font></interface></zombieGame>
+	template <class Output>
+	Output getValueFromTag(const tinyxml2::XMLDocument& xmlDoc, std::string input);
+
+	// Saves the value in the tag defined by handle.
+	template <class Value>
+	void insert(const Value& value, tinyxml2::XMLHandle handle);
+
 	class DataEntry {
 	public:
 		DataEntry(std::string file);
@@ -127,7 +146,6 @@ namespace xml {
 		mutable tinyxml2::XMLHandle tag_; // In order to avoid usage of XMLConstHandle.
 	};
 
-	// Generic template function to extract value from xml tag.
 	template <class Output>
 	Output extract(tinyxml2::XMLHandle handle) {
 		tinyxml2::XMLElement* element = handle.ToElement();
@@ -149,14 +167,9 @@ namespace xml {
 		return output;
 	}
 
-	// Specialization for string type. In order to insure that the whole text is 
-	// returned as a string.
 	template <>
 	std::string extract(tinyxml2::XMLHandle handle);
 
-	// Returns the value defined in the input string. 
-	// E.g. input = "zombieGame interface font", returns the 
-	// value defined in the tag inside <zombieGame><interface><font>value</font></interface></zombieGame>
 	template <class Output>
 	Output getValueFromTag(const tinyxml2::XMLDocument& xmlDoc, std::string input) {
 		std::stringstream stream(input);
@@ -168,7 +181,6 @@ namespace xml {
 		return extract<Output>(handleXml);
 	}
 
-	// Saves the value in the tag defined by handle.
 	template <class Value>
 	void insert(const Value& value, tinyxml2::XMLHandle handle) {
 		tinyxml2::XMLElement* element = handle.ToElement();
