@@ -6,6 +6,7 @@
 #include <string>
 #include <functional>
 #include <memory>
+#include <sstream>
 
 namespace xml {
 

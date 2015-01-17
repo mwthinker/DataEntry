@@ -18,14 +18,14 @@ int main(int argc, char** argv) {
 	}
 	// Or do this.
 	{
-		float width = entry.getEntry("test window width").getFloat();
-		float height = entry.getEntry("test window height").getFloat();
-		bool maximized = entry.getEntry("test window maximized").getBool();
-		int positionX = entry.getEntry("test window positionX").getInt();
+		float width = entry.getDeepChildEntry("test window width").getFloat();
+		float height = entry.getDeepChildEntry("test window height").getFloat();
+		bool maximized = entry.getDeepChildEntry("test window maximized").getBool();
+		int positionX = entry.getDeepChildEntry("test window positionX").getInt();
 	}
 
 	int size = 0;
-	xml::DataEntry itE = entry.getEntry("test iter testing");
+	xml::DataEntry itE = entry.getDeepChildEntry("test iter testing");
 	while (itE.hasData()) {
 		++size;
 		itE = itE.getSibling("testing");
