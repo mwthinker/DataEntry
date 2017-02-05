@@ -24,6 +24,45 @@ namespace xml {
 		return std::string(str);
 	}
 
+	DataEntry DataEntry::addTag(std::string name) {
+		tinyxml2::XMLElement* node = xml_->doc_.NewElement(name.c_str());
+		tinyxml2::XMLNode* insertIn = tag_.ToNode();
+		tinyxml2::XMLNode* newNode = insertIn->LinkEndChild(node);
+		return DataEntry(xml_, newNode);
+	}
+
+	void DataEntry::removeFirstChild() {
+		if (tag_.ToNode() != nullptr && tag_.FirstChild().ToNode() != nullptr) {
+			tag_.ToNode()->DeleteChild(tag_.FirstChild().ToNode());
+		}
+	}
+
+	void DataEntry::remove() {
+		if (tag_.ToNode() != nullptr) {
+			tag_.ToNode()->Parent()->DeleteChild(tag_.ToNode());
+		}
+	}
+
+	void DataEntry::removeAllChildren() {
+		if (tag_.ToNode() != nullptr) {
+			tag_.ToNode()->DeleteChildren();
+		}
+	}
+
+	void DataEntry::removeFirstChild(std::string tagName) {
+		if (tag_.ToNode() != nullptr && tag_.ToNode()->FirstChildElement(tagName.c_str()) != nullptr) {
+			tag_.ToNode()->DeleteChild(tag_.ToNode()->FirstChildElement(tagName.c_str()));
+		}
+	}
+
+	void DataEntry::removeAllChildren(std::string tagName) {
+		tinyxml2::XMLNode* child = tag_.ToNode()->FirstChildElement(tagName.c_str());
+		while (child != nullptr && tag_.ToNode()->FirstChildElement(tagName.c_str()) != nullptr ) {
+			tag_.ToNode()->DeleteChild(child);
+			child = tag_.ToNode()->FirstChildElement(tagName.c_str());
+		}
+	}
+
 	void DataEntry::save() {
 		xml_->doc_.SaveFile(xml_->fileName_.c_str());
 	}
@@ -36,9 +75,17 @@ namespace xml {
 		return get<float>();
 	}
 
+	double DataEntry::getDouble() const {
+		return get<double>();
+	}
+
 	int DataEntry::getInt() const {
 		return get<int>();
-	}	
+	}
+
+	char DataEntry::getChar() const {
+		return get<char>();
+	}
 
 	std::string DataEntry::getString() const {
 		return get<std::string>();
@@ -62,6 +109,16 @@ namespace xml {
 			return e->FloatAttribute(attribute.c_str());
 		}
 		return float();
+	}
+
+	// Return the tag's attribute double value.
+	// If it fails the default value is returned.
+	double DataEntry::getDoubleAttribute(std::string attribute) const {
+		tinyxml2::XMLElement* e = tag_.ToElement();
+		if (e != nullptr) {
+			return e->DoubleAttribute(attribute.c_str());
+		}
+		return double();
 	}
 
 	// Return the tag's attribute int value.

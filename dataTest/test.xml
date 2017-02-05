@@ -6,10 +6,12 @@
         <positionX>600</positionX>
         <positionY>50</positionY>
         <maximized>1</maximized>
+		<maximized2>0</maximized2>
     </window>
 	<iter>
 		<testing a="1">Yes</testing>
 		<testing a="2">No</testing>
 		<testing>No</testing>
+		<key>N</key>
 	</iter>
 </test>

@@ -32,6 +32,22 @@ namespace xml {
 	class DataEntry {
 	public:
 		DataEntry(std::string file);
+
+		DataEntry addTag(std::string name);
+
+		void remove();
+		void removeFirstChild();
+		void removeAllChildren();
+
+		void removeFirstChild(std::string tagName);
+		void removeAllChildren(std::string tagName);
+
+		template <class Value>
+		DataEntry addTag(std::string name, Value value) {
+			DataEntry entry = addTag(name);
+			entry.set<Value>(value);
+			return entry;
+		}
 		
 		// Save the current xml file, overwrite the current version.
 		void save();
@@ -48,9 +64,17 @@ namespace xml {
 		// If it fails the default value is returned.
 		float getFloat() const;
 
+		// Return the tag's current double value.
+		// If it fails the default value is returned.
+		double getDouble() const;
+
 		// Return the tag's current int value.
 		// If it fails the default value is returned.
 		int getInt() const;
+
+		// Return the tag's current char value.
+		// If it fails the default value is returned.
+		char getChar() const;
 
 		// Return the tag's current string value.
 		// If it fails the default value is returned.
@@ -63,6 +87,10 @@ namespace xml {
 		// Return the tag's attribute float value.
 		// If it fails the default value is returned.
 		float getFloatAttribute(std::string attribute) const;
+
+		// Return the tag's attribute float value.
+		// If it fails the default value is returned.
+		double getDoubleAttribute(std::string attribute) const;
 
 		// Return the tag's attribute int value.
 		// If it fails the default value is returned.
