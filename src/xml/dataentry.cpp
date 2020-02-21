@@ -1,34 +1,27 @@
 #include "dataentry.h"
 
-#include <tinyxml2.h>
-
-#include <map>
-#include <string>
-#include <sstream>
-#include <iostream>
-
 namespace xml {
 
 	template <>
 	std::string extract(tinyxml2::XMLHandle handle) {
-		tinyxml2::XMLElement* element = handle.ToElement();
+		auto element = handle.ToElement();
 		if (element == nullptr) {
-			throw std::runtime_error("Missing element!");
+			throw std::runtime_error{"Missing element!"};
 		}
 		const char* str = element->GetText();
 
 		if (str == nullptr) {
-			throw std::runtime_error("Missing text!");
+			throw std::runtime_error{"Missing text!"};
 		}
 
-		return std::string(str);
+		return str;
 	}
 
-	DataEntry DataEntry::addTag(std::string name) {
-		tinyxml2::XMLElement* node = xml_->doc_.NewElement(name.c_str());
-		tinyxml2::XMLNode* insertIn = tag_.ToNode();
-		tinyxml2::XMLNode* newNode = insertIn->LinkEndChild(node);
-		return DataEntry(xml_, newNode);
+	DataEntry DataEntry::addTag(const std::string& name) {
+		auto node = xml_->doc.NewElement(name.c_str());
+		auto insertIn = tag_.ToNode();
+		auto newNode = insertIn->LinkEndChild(node);
+		return {xml_, tinyxml2::XMLHandle{newNode}};
 	}
 
 	void DataEntry::removeFirstChild() {
@@ -49,14 +42,14 @@ namespace xml {
 		}
 	}
 
-	void DataEntry::removeFirstChild(std::string tagName) {
+	void DataEntry::removeFirstChild(const std::string& tagName) {
 		if (tag_.ToNode() != nullptr && tag_.ToNode()->FirstChildElement(tagName.c_str()) != nullptr) {
 			tag_.ToNode()->DeleteChild(tag_.ToNode()->FirstChildElement(tagName.c_str()));
 		}
 	}
 
-	void DataEntry::removeAllChildren(std::string tagName) {
-		tinyxml2::XMLNode* child = tag_.ToNode()->FirstChildElement(tagName.c_str());
+	void DataEntry::removeAllChildren(const std::string& tagName) {
+		auto child = tag_.ToNode()->FirstChildElement(tagName.c_str());
 		while (child != nullptr && tag_.ToNode()->FirstChildElement(tagName.c_str()) != nullptr ) {
 			tag_.ToNode()->DeleteChild(child);
 			child = tag_.ToNode()->FirstChildElement(tagName.c_str());
@@ -64,7 +57,7 @@ namespace xml {
 	}
 
 	void DataEntry::save() {
-		xml_->doc_.SaveFile(xml_->fileName_.c_str());
+		xml_->doc.SaveFile(xml_->fileName.c_str());
 	}
 
 	bool DataEntry::getBool() const {
@@ -93,52 +86,52 @@ namespace xml {
 
 	// Return the tag's attribute bool value.
 	// If it fails the default value is returned.
-	bool DataEntry::getBoolAttribute(std::string attribute) const {
-		tinyxml2::XMLElement* e = tag_.ToElement();
+	bool DataEntry::getBoolAttribute(const std::string& attribute) const {
+		auto e = tag_.ToElement();
 		if (e != nullptr) {
 			return e->BoolAttribute(attribute.c_str());
 		}
-		return bool();
+		return {};
 	}
 
 	// Return the tag's attribute float value.
 	// If it fails the default value is returned.
-	float DataEntry::getFloatAttribute(std::string attribute) const {
-		tinyxml2::XMLElement* e = tag_.ToElement();
+	float DataEntry::getFloatAttribute(const std::string& attribute) const {
+		auto e = tag_.ToElement();
 		if (e != nullptr) {
 			return e->FloatAttribute(attribute.c_str());
 		}
-		return float();
+		return {};
 	}
 
 	// Return the tag's attribute double value.
 	// If it fails the default value is returned.
-	double DataEntry::getDoubleAttribute(std::string attribute) const {
-		tinyxml2::XMLElement* e = tag_.ToElement();
+	double DataEntry::getDoubleAttribute(const std::string& attribute) const {
+		auto e = tag_.ToElement();
 		if (e != nullptr) {
 			return e->DoubleAttribute(attribute.c_str());
 		}
-		return double();
+		return {};
 	}
 
 	// Return the tag's attribute int value.
 	// If it fails the default value is returned.
-	int DataEntry::getIntAttribute(std::string attribute) const {
-		tinyxml2::XMLElement* e = tag_.ToElement();
+	int DataEntry::getIntAttribute(const std::string& attribute) const {
+		auto e = tag_.ToElement();
 		if (e != nullptr) {
 			return e->IntAttribute(attribute.c_str());
 		}
-		return int();
+		return {};
 	}
 
 	// Return the tag's attribute string value.
 	// If it fails the default value is returned.
-	std::string DataEntry::getStringAttribute(std::string attribute) const {
-		tinyxml2::XMLElement* e = tag_.ToElement();
+	std::string DataEntry::getStringAttribute(const std::string& attribute) const {
+		auto e = tag_.ToElement();
 		if (e != nullptr) {
 			return e->Attribute(attribute.c_str());
 		}
-		return std::string();
+		return {};
 	}
 
 	void DataEntry::setBool(bool value) {
@@ -153,48 +146,53 @@ namespace xml {
 		set<int>(value);
 	}
 
-	void DataEntry::setString(std::string value) {
+	void DataEntry::setString(const std::string& value) {
 		set<std::string>(value);
 	}
 
-	DataEntry DataEntry::getSibling(std::string siblingName) const {
-		return DataEntry(xml_, tag_.NextSiblingElement(siblingName.c_str()));
+	DataEntry DataEntry::getSibling(const std::string& siblingName) const {
+		return {xml_, tag_.NextSiblingElement(siblingName.c_str())};
 	}
 
 	DataEntry DataEntry::getParent() const {
 		auto node = tag_.ToNode();
 		if (node == nullptr) {
-			return DataEntry(xml_, tag_);
+			return {xml_, tag_};
 		}
-		return DataEntry(xml_, tag_.ToNode()->Parent());
+		return {xml_, tinyxml2::XMLHandle{tag_.ToNode()->Parent()}};
 	}
 
-	DataEntry::DataEntry(std::string file) : xml_(std::make_shared<Xml>()), tag_(xml_->doc_) {
-		xml_->doc_.LoadFile(file.c_str());
-		xml_->fileName_ = file;
-		tag_ = tinyxml2::XMLHandle(xml_->doc_);
+	DataEntry::DataEntry(const std::string& file)
+		: xml_(std::make_shared<Xml>())
+		, tag_(xml_->doc) {
+		
+		xml_->doc.LoadFile(file.c_str());
+		xml_->fileName = file;
+		tag_ = tinyxml2::XMLHandle{xml_->doc};
 	}
 
-	DataEntry DataEntry::getChildEntry(std::string tagName) const {
-		return DataEntry(xml_, tag_.FirstChildElement(tagName.c_str()));
+	DataEntry DataEntry::getChildEntry(const std::string& tagName) const {
+		return {xml_, tag_.FirstChildElement(tagName.c_str())};
 	}
 
-	DataEntry DataEntry::getDeepChildEntry(std::string tagNames) const {
-		std::stringstream stream(tagNames);
+	DataEntry DataEntry::getDeepChildEntry(const std::string& tagNames) const {
+		std::stringstream stream{tagNames};
 		std::string tag;
-		tinyxml2::XMLHandle handleXml(tag_);
+		tinyxml2::XMLHandle handleXml{tag_};
 		while (stream >> tag) {
 			handleXml = handleXml.FirstChildElement(tag.c_str());
 		}
-		return DataEntry(xml_, handleXml);
+		return {xml_, handleXml};
 	}
 
-	bool DataEntry::isAttributeEqual(std::string name, std::string value) const {
+	bool DataEntry::isAttributeEqual(const std::string& name, const std::string& value) const {
 		auto element = tag_.ToElement();
 		return element == nullptr ? false : element->Attribute(name.c_str(), value.c_str()) != nullptr;
 	}	
 
-	DataEntry::DataEntry(std::shared_ptr<Xml> xml, tinyxml2::XMLHandle tag) : xml_(xml), tag_(tag) {
+	DataEntry::DataEntry(const std::shared_ptr<Xml>& xml, tinyxml2::XMLHandle tag)
+		: xml_(xml)
+		, tag_(tag) {
 	}
 
 	bool DataEntry::hasData() const {
@@ -202,11 +200,11 @@ namespace xml {
 	}
 
 	bool DataEntry::isError() const {
-		return xml_->doc_.Error();
+		return xml_->doc.Error();
 	}
 
 	void DataEntry::printError() const {
-		return xml_->doc_.PrintError();
+		return xml_->doc.PrintError();
 	}
 
 } // Namespace xml.

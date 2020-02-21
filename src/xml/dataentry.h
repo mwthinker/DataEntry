@@ -23,7 +23,7 @@ namespace xml {
 	// E.g. input = "zombieGame interface font", returns the 
 	// value defined in the tag inside <zombieGame><interface><font>value</font></interface></zombieGame>
 	template <class Output>
-	Output getValueFromTag(const tinyxml2::XMLDocument& xmlDoc, std::string input);
+	Output getValueFromTag(const tinyxml2::XMLDocument& xmlDoc, const std::string& input);
 
 	// Saves the value in the tag defined by handle.
 	template <class Value>
@@ -31,30 +31,26 @@ namespace xml {
 
 	class DataEntry {
 	public:
-		DataEntry(std::string file);
+		DataEntry(const std::string& file);
 
-		DataEntry addTag(std::string name);
+		DataEntry addTag(const std::string& name);
 
 		void remove();
 		void removeFirstChild();
 		void removeAllChildren();
 
-		void removeFirstChild(std::string tagName);
-		void removeAllChildren(std::string tagName);
+		void removeFirstChild(const std::string& tagName);
+		void removeAllChildren(const std::string& tagName);
 
 		template <class Value>
-		DataEntry addTag(std::string name, Value value) {
-			DataEntry entry = addTag(name);
-			entry.set<Value>(value);
-			return entry;
-		}
+		DataEntry addTag(const std::string&, const Value& value);
 		
 		// Save the current xml file, overwrite the current version.
 		void save();
 
 		// Return true if the current tag's attribute (name) value is equal to (value).
 		// Else return false.
-		bool isAttributeEqual(std::string name, std::string value) const;
+		bool isAttributeEqual(const std::string&, const std::string&) const;
 		
 		// Return the tag's current bool value.
 		// If it fails the default value is returned.
@@ -82,46 +78,33 @@ namespace xml {
 
 		// Return the tag's attribute bool value.
 		// If it fails the default value is returned.
-		bool getBoolAttribute(std::string attribute) const;
+		bool getBoolAttribute(const std::string& attribute) const;
 
 		// Return the tag's attribute float value.
 		// If it fails the default value is returned.
-		float getFloatAttribute(std::string attribute) const;
+		float getFloatAttribute(const std::string& attribute) const;
 
 		// Return the tag's attribute float value.
 		// If it fails the default value is returned.
-		double getDoubleAttribute(std::string attribute) const;
+		double getDoubleAttribute(const std::string& attribute) const;
 
 		// Return the tag's attribute int value.
 		// If it fails the default value is returned.
-		int getIntAttribute(std::string attribute) const;
+		int getIntAttribute(const std::string& attribute) const;
 
 		// Return the tag's attribute string value.
 		// If it fails the default value is returned.
-		std::string getStringAttribute(std::string attribute) const;
+		std::string getStringAttribute(const std::string& attribute) const;
 
 		// Return the tag's current Value value.
 		// If it fails the default value is returned.
 		template <class Value>
-		Value get() const {
-			try {
-				return xml::extract<Value>(tag_);
-			} catch (std::runtime_error) {
-				return Value();
-			}
-		}
+		Value get() const;
 
 		// Set the tag's current Value value.
 		// If it fails false is returned else true.
 		template <class Value>
-		bool set(Value value) {
-			try {
-				xml::insert<Value>(value, tag_);
-				return true;
-			} catch (std::runtime_error) {
-				return false;
-			}
-		}
+		bool set(const Value& value);
 
 		// Set the tag's current bool value.
 		// If it fails false is returned else true.
@@ -137,18 +120,18 @@ namespace xml {
 
 		// Set the tag's current string value.
 		// If it fails false is returned else true.
-		void setString(std::string value);
+		void setString(const std::string& value);
 		
 		// Return the first child entry with name of tagName.
-		DataEntry getChildEntry(std::string tagName) const;
+		DataEntry getChildEntry(const std::string& tagName) const;
 
 		// Return the first child entry in the end of all tagNames.
 		// E.g. getEntry("test window width")
 		// give the same result as 
 		// entry.getChildEntry("test").getChildEntry("window").getChildEntry("width")
-		DataEntry getDeepChildEntry(std::string tagNames) const;
+		DataEntry getDeepChildEntry(const std::string& tagNames) const;
 
-		DataEntry getSibling(std::string siblingName) const;
+		DataEntry getSibling(const std::string& siblingName) const;
 
 		DataEntry getParent() const;
 		
@@ -162,11 +145,11 @@ namespace xml {
 
 	private:
 		struct Xml {
-			tinyxml2::XMLDocument doc_;
-			std::string fileName_;
+			tinyxml2::XMLDocument doc;
+			std::string fileName;
 		};
 
-		DataEntry(std::shared_ptr<Xml> xml, tinyxml2::XMLHandle tag);
+		DataEntry(const std::shared_ptr<Xml>& xml, tinyxml2::XMLHandle tag);
 
 		std::shared_ptr<Xml> xml_;
 
@@ -174,23 +157,51 @@ namespace xml {
 		mutable tinyxml2::XMLHandle tag_; // In order to avoid usage of XMLConstHandle.
 	};
 
+	template <class Value>
+	DataEntry DataEntry::addTag(const std::string& name, const Value& value) {
+		auto entry = addTag(name);
+		entry.set<Value>(value);
+		return entry;
+	}
+
+	template <class Value>
+	Value DataEntry::get() const {
+		try {
+			return xml::extract<Value>(tag_);
+		} catch (std::runtime_error&) {
+			return {};
+		}
+	}
+
+	// Set the tag's current Value value.
+	// If it fails false is returned else true.
+	template <class Value>
+	bool DataEntry::set(const Value& value) {
+		try {
+			xml::insert<Value>(value, tag_);
+			return true;
+		} catch (std::runtime_error&) {
+			return false;
+		}
+	}
+
 	template <class Output>
 	Output extract(tinyxml2::XMLHandle handle) {
-		tinyxml2::XMLElement* element = handle.ToElement();
+		auto element = handle.ToElement();
 		if (element == nullptr) {
-			throw std::runtime_error("Missing element!");
+			throw std::runtime_error{"Missing element!"};
 		}
 		const char* str = element->GetText();
 
 		if (str == nullptr) {
-			throw std::runtime_error("Missing text!");
+			throw std::runtime_error{"Missing text!"};
 		}
 
-		std::stringstream stream(str);
+		std::stringstream stream{str};
 		Output output;
 		stream >> output;
 		if (stream.fail()) {
-			throw std::runtime_error("Stream failed!");
+			throw std::runtime_error{"Stream failed!"};
 		}
 		return output;
 	}
@@ -199,7 +210,7 @@ namespace xml {
 	std::string extract(tinyxml2::XMLHandle handle);
 
 	template <class Output>
-	Output getValueFromTag(const tinyxml2::XMLDocument& xmlDoc, std::string input) {
+	Output getValueFromTag(const tinyxml2::XMLDocument& xmlDoc, const std::string& input) {
 		std::stringstream stream(input);
 		std::string tag;
 		tinyxml2::XMLConstHandle handleXml(xmlDoc);
@@ -211,15 +222,15 @@ namespace xml {
 
 	template <class Value>
 	void insert(const Value& value, tinyxml2::XMLHandle handle) {
-		tinyxml2::XMLElement* element = handle.ToElement();
+		auto element = handle.ToElement();
 		if (element == nullptr) {
-			throw std::runtime_error("Missing element!");
+			throw std::runtime_error{"Missing element!"};
 		}
 
 		std::stringstream stream;
 		stream << value;
 		if (stream.fail()) {
-			throw std::runtime_error("Stream failed!");
+			throw std::runtime_error{"Stream failed!"};
 		}
 
 		element->SetText(stream.str().c_str());
